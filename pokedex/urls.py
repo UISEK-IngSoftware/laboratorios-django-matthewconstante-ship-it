@@ -1,13 +1,13 @@
 from django.urls import path
 from . import views
 
+app_name = "pokedex"
+
 urlpatterns = [
-    # Inicio: http://127.0.0.1:8000/
     path("", views.index, name="index"),
-    
-    # Detalle Pokémon: http://127.0.0.1:8000/pokemon/1/
     path("pokemon/<int:id>/", views.pokemon, name="pokemon"),
-    
-    # Detalle Entrenador: http://127.0.0.1:8000/Trainer/1/
     path("Trainer/<int:id>/", views.trainer_details, name="Trainer"),
+    path("add_pokemon/", views.add_pokemon, name="add_pokemon"),
+    path("edit_pokemon/<int:id>/", views.edit_pokemon, name="edit_pokemon"), 
+    path("delete_pokemon/<int:id>/", views.delete_pokemon, name="delete_pokemon"),
 ]

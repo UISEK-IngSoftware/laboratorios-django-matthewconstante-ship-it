@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Pokedex Pro {% endblock %}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #f4f6f9; }
+        h1, h2, h3, h4, h5, .card-title { font-family: 'Montserrat', sans-serif; }
+
+        .navbar-custom { 
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%); 
+            border-bottom: 5px solid #212121;
+        }
+
+        .pk-card {
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+            border: 1px solid #e0e0e0;
+        }
+        .pk-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+            border-color: #c62828;
+        }
+
+        /* Estilo para que las imágenes tengan sombra de profundidad */
+        .drop-shadow {
+            filter: drop-shadow(0 8px 8px rgba(0,0,0,0.2));
+        }
+
+        .type-badge { color: white; font-weight: 500; padding: 0.5em 1em; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem;}
+        .type-Fuego { background-color: #ff4422; }
+        .type-Agua { background-color: #3399ff; }
+        .type-Planta { background-color: #77cc55; }
+        .type-Electrico { background-color: #ffcc33; color: #333; }
+        .type-Hielo { background-color: #66ccff; color: #333; }
+        .type-Lucha { background-color: #bb5544; }
+        .type-Veneno { background-color: #aa5599; }
+        .type-Tierra { background-color: #ddbb55; color: #333; }
+        .type-Volador { background-color: #8899ff; }
+        .type-Psiquico { background-color: #ff5599; }
+        .type-Bicho { background-color: #aabb22; color: #333; }
+        .type-Roca { background-color: #bbaa66; }
+        .type-Fantasma { background-color: #6666bb; }
+        .type-Dragon { background-color: #7766ee; }
+        .type-Sombra, .type-Normal, .type-Acero, .type-Hada { background-color: #8a8a8a; }
+
+        /* Espaciado para iconos dentro de botones */
+        .btn i { margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark navbar-custom shadow-lg mb-5 py-3">
+        <div class="container d-flex justify-content-center">
+            <a class="navbar-brand" href="{% url 'pokedex:index' %}">
+                <img src="{% static 'logo.png' %}" alt="Logo Pokedex" style="max-height: 70px;">
+            </a>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

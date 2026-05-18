@@ -33,7 +33,7 @@ def add_pokemon(request):
             return redirect('pokedex:index') 
     else:
         form = PokemonForm()
-    return render(request, 'add_pokemon.html', {'form': form})
+    return render(request, 'pokemon_form.html', {'form': form})
 
 def edit_pokemon(request, id): 
     pokemon_obj = get_object_or_404(Pokemon, id=id) 
@@ -53,5 +53,4 @@ def delete_pokemon(request, id):
         pokemon_obj.delete()
         return redirect('pokedex:index')
     
-    # Si entran por GET (URL directa), los mandamos al detalle para que usen el botón
     return redirect('pokedex:pokemon', id=id)

@@ -31,7 +31,8 @@ ROOT_URLCONF = 'lab8.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # CORRECCIÓN DE RUTAS: Ahora Django rastrea las carpetas de plantillas sin problemas
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'pokedex' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -52,7 +53,7 @@ DATABASES = {
 }
 
 LANGUAGE_CODE = 'es-ec'
-TIME_ZONE = 'UTC' # Evita el error de America/Quito
+TIME_ZONE = 'UTC' 
 USE_I18N = True
 USE_TZ = True
 
@@ -62,3 +63,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# CONFIGURACIONES DE REDIRECCIÓN PARA NUESTRO ACCESO
+LOGIN_URL = 'pokedex:login'
+LOGIN_REDIRECT_URL = 'pokedex:index'
+
+# CORRECCIÓN: Al cerrar sesión, el usuario regresa inmediatamente al modo invitado (index)
+LOGOUT_REDIRECT_URL = 'pokedex:index'

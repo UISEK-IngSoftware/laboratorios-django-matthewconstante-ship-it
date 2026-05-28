@@ -2,46 +2,55 @@
 
 {% block content %}
 <div class="row justify-content-center mt-4">
-    <div class="col-md-8 col-lg-5">
-        <div class="card shadow-lg border-0 rounded-4 text-center bg-white overflow-hidden">
-            <div class="bg-danger text-white py-4 mb-5" style="border-bottom: 8px solid #212121;">
-                <h3 class="fw-bold m-0 text-uppercase tracking-wider">ID de Entrenador</h3>
-            </div>
+    <div class="col-md-8 col-lg-6">
+        
+        <a href="{% url 'pokedex:index' %}" class="btn btn-link text-decoration-none text-secondary p-0 mb-4 fw-semibold">
+            <i class="fa-solid fa-arrow-left me-2"></i> Volver a la Liga
+        </a>
+
+        <div class="card pk-card text-center overflow-hidden p-0">
+            <div style="height: 120px; background: linear-gradient(135deg, #ff3b30 0%, #ff8c00 100%);"></div>
             
-            <div style="margin-top: -80px;" class="mb-3 position-relative">
-                {% if trainer.picture %}
-                    <img src="{{ trainer.picture.url }}" class="rounded-circle shadow-lg" style="width: 160px; height: 160px; object-fit: cover; border: 6px solid white; background: white;">
-                {% else %}
-                    <div class="bg-secondary rounded-circle mx-auto shadow-lg d-flex align-items-center justify-content-center" style="width: 160px; height: 160px; border: 6px solid white;">
-                        <span class="text-white display-1">👤</span>
+            <div class="card-body px-5 pb-5" style="margin-top: -60px;">
+                <div class="mb-3">
+                    {% if trainer.picture %}
+                        <img src="{{ trainer.picture.url }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #fff; background: #fff;">
+                    {% else %}
+                        <div class="rounded-circle shadow mx-auto d-flex align-items-center justify-content-center bg-white text-secondary" style="width: 120px; height: 120px; border: 4px solid #fff;">
+                            <i class="fa-solid fa-user display-3"></i>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <h2 class="fw-bold text-dark mb-1">{{ trainer.first_name }} {{ trainer.last_name }}</h2>
+                <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm mb-4">Entrenador Nivel {{ trainer.level }}</span>
+
+                <div class="p-3 bg-light rounded-4 mb-4 text-start">
+                    <div class="row text-center">
+                        <div class="col-6 border-end">
+                            <span class="d-block text-muted small fw-bold">FECHA NACIMIENTO</span>
+                            <span class="fw-semibold text-dark">{{ trainer.birth_date|date:"d M, Y" }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="d-block text-muted small fw-bold">ESTADO</span>
+                            <span class="text-success fw-bold"><i class="fa-solid fa-circle-check me-1"></i> Activo</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'pokedex:edit_trainer' trainer.id %}" class="btn btn-dark btn-pk w-100">
+                            <i class="fa-solid fa-pen me-2"></i> Editar Perfil
+                        </a>
+                        <form action="{% url 'pokedex:delete_trainer' trainer.id %}" method="POST" class="m-0 w-100">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-pk w-100" onclick="return confirm('¿Eliminar al entrenador {{ trainer.first_name }} de la liga?')">
+                                <i class="fa-solid fa-user-slash me-2"></i> Dar de Baja
+                            </button>
+                        </form>
                     </div>
                 {% endif %}
-            </div>
-
-            <div class="card-body px-5 pb-5 pt-0">
-                <h2 class="fw-bold text-dark mb-2">{{ trainer.first_name }} {{ trainer.last_name }}</h2>
-                
-                <span class="badge bg-warning text-dark px-4 py-2 fs-6 rounded-pill shadow-sm mb-3">NIVEL {{ trainer.level }}</span>
-                
-                <p class="text-muted fw-bold mb-4">Nacido el: {{ trainer.birth_date }}</p>
-
-                <div class="text-start bg-light rounded-4 p-4 mb-4 border">
-                    <h6 class="fw-bold text-danger text-uppercase mb-3">Equipo Actual ({{ trainer.pokemons.count }})</h6>
-                    <ul class="list-group list-group-flush rounded-3 border">
-                        {% for p in trainer.pokemons.all %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center bg-white">
-                                <span class="fw-bold text-dark">{{ p.name|capfirst }}</span>
-                                <span class="badge rounded-pill type-badge type-{{ p.type }}">{{ p.type }}</span>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item text-center text-muted fst-italic py-3 bg-white">
-                                Su equipo está vacío.
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                
-                <a href="{% url 'pokedex:index' %}" class="btn btn-outline-danger rounded-pill fw-bold px-5">Regresar</a>
             </div>
         </div>
     </div>

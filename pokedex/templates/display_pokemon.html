@@ -1,55 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="text-center mb-4 mt-3">
-    <h5 class="text-secondary fw-bold text-uppercase tracking-wider mb-1">Ficha Técnica de</h5>
-    <h1 class="fw-bold text-danger display-4">{{ pokemon.name|upper }}</h1>
-</div>
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-10">
+        <a href="{% url 'pokedex:index' %}" class="btn btn-link text-decoration-none text-secondary p-0 mb-4 fw-semibold">
+            <i class="fa-solid fa-arrow-left me-2"></i> Volver a la lista
+        </a>
 
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-            <div class="bg-light p-5 text-center border-bottom">
-                {% if pokemon.picture %}
-                    <img src="{{ pokemon.picture.url }}" class="img-fluid drop-shadow" style="max-height: 250px;">
-                {% else %}
-                    <span class="display-1 text-muted opacity-50">🐾</span>
-                {% endif %}
-            </div>
-
-            <div class="card-body p-5 pt-4 text-center bg-white">
-                <span class="badge rounded-pill type-badge type-{{ pokemon.type }} shadow-sm mb-4 fs-6 px-4 py-2">
-                    TIPO {{ pokemon.type|upper }}
-                </span>
-                
-                <p class="text-secondary fs-5 fst-italic mb-4">
-                    "{{ pokemon.description|default:'Información clasificada.' }}"
-                </p>
-                
-                <div class="row border-top border-bottom py-3 mb-4 bg-light rounded-3">
-                    <div class="col-6 border-end">
-                        <small class="text-muted fw-bold d-block text-uppercase">Peso</small>
-                        <span class="fs-4 fw-bold text-dark">{{ pokemon.weight }} <small>kg</small></span>
-                    </div>
-                    <div class="col-6">
-                        <small class="text-muted fw-bold d-block text-uppercase">Altura</small>
-                        <span class="fs-4 fw-bold text-dark">{{ pokemon.height }} <small>m</small></span>
-                    </div>
-                </div>
-
-                <div class="border rounded-4 p-3 bg-white shadow-sm text-start mb-4">
-                    <small class="text-danger fw-bold d-block text-uppercase mb-2">Entrenador Actual:</small>
-                    {% if pokemon.trainer %}
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="fw-bold fs-5 text-dark">👤 {{ pokemon.trainer.first_name }} {{ pokemon.trainer.last_name }}</span>
-                            <a href="{% url 'pokedex:Trainer' pokemon.trainer.id %}" class="btn btn-sm btn-danger rounded-pill fw-bold">Ver ID</a>
-                        </div>
+        <div class="card pk-card overflow-hidden">
+            <div class="row g-0">
+                <div class="col-md-5 d-flex align-items-center justify-content-center p-5" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);">
+                    {% if pokemon.picture %}
+                        <img src="{{ pokemon.picture.url }}" class="img-fluid img-float" style="max-height: 300px; object-fit: contain;">
                     {% else %}
-                        <span class="text-muted fw-bold fst-italic">Pokémon Salvaje (Sin atrapar)</span>
+                        <i class="fa-solid fa-image display-1 text-muted opacity-25"></i>
                     {% endif %}
                 </div>
-
-                <a href="{% url 'pokedex:index' %}" class="btn btn-dark btn-lg rounded-pill px-5 fw-bold shadow-sm">← Volver al Listado</a>
+                
+                <div class="col-md-7 p-5 bg-white">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h1 class="fw-bold display-5 text-dark m-0">{{ pokemon.name|title }}</h1>
+                        <span class="badge bg-dark text-white rounded-pill px-3 py-2 fs-6 shadow-sm">{{ pokemon.type }}</span>
+                    </div>
+                    
+                    <p class="text-secondary mb-4" style="line-height: 1.6;">
+                        {{ pokemon.description|default:"No hay datos de la Pokédex disponibles." }}
+                    </p>
+                    
+                    <div class="row g-3 mb-5">
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-4 text-center">
+                                <span class="d-block text-muted small fw-bold mb-1">ALTURA</span>
+                                <span class="fs-4 fw-bold text-dark">{{ pokemon.height }} <small class="fs-6 text-muted">m</small></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-4 text-center">
+                                <span class="d-block text-muted small fw-bold mb-1">PESO</span>
+                                <span class="fs-4 fw-bold text-dark">{{ pokemon.weight }} <small class="fs-6 text-muted">kg</small></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded-4 d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-bold">ENTRENADOR</span>
+                                <span class="fw-bold text-dark"><i class="fa-solid fa-user text-danger me-2"></i>{{ pokemon.trainer }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="d-flex gap-3 pt-3 border-top">
+                            <a href="{% url 'pokedex:edit_pokemon' pokemon.id %}" class="btn btn-dark btn-pk flex-grow-1">
+                                <i class="fa-solid fa-pen-to-square me-2"></i> Editar Datos
+                            </a>
+                            <form action="{% url 'pokedex:delete_pokemon' pokemon.id %}" method="POST" class="m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-pk px-4" onclick="return confirm('¿Confirmas la liberación de {{ pokemon.name }}?')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

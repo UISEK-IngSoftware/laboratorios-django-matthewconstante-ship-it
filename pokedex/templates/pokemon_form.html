@@ -1,29 +1,144 @@
 {% extends "base.html" %}
-{% block title %} Formulario de Pokemones {% endblock title %}
-
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow rounded-4 p-4">
-            <h2 class="text-center mb-4">Registrar Pokémon</h2>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        
+        <a href="{% url 'pokedex:index' %}" class="btn btn-link text-decoration-none text-secondary p-0 mb-3 fw-semibold">
+            <i class="fa-solid fa-arrow-left me-2"></i> Volver a la Lista
+        </a>
+
+        <div class="card pk-card p-4 border-top border-danger border-5">
+            <h3 class="fw-bold mb-4"><i class="fa-solid fa-dragon text-danger me-2"></i>Registrar Pokémon</h3>
             
-            <form method="post" enctype="multipart/form-data">
+            {% if form.errors %}
+                <div class="alert alert-danger p-2 small shadow-sm">
+                    <ul class="mb-0">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">NOMBRE (EN INGLÉS)</label>
+                    <div class="input-group">
+                        {{ form.name }}
+                        <button class="btn btn-primary fw-bold px-3" type="button" id="btn-auto">
+                            <i class="fa-solid fa-bolt me-1"></i> API
+                        </button>
+                    </div>
+                    <small class="text-muted d-block mt-1">Escribe en inglés (ej: pikachu, charizard) y presiona el botón azul.</small>
+                </div>
+                
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="small fw-bold">TIPO</label>
+                        {{ form.type }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="small fw-bold">ENTRENADOR</label>
+                        {{ form.trainer }}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="small fw-bold">ALTURA (m)</label>
+                        {{ form.height }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="small fw-bold">PESO (kg)</label>
+                        {{ form.weight }}
+                    </div>
+                </div>
                 
                 <div class="mb-3">
-                    {{ form.as_p }}
+                    <label class="small fw-bold">DESCRIPCIÓN</label>
+                    {{ form.description }}
                 </div>
                 
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary rounded-pill fw-bold">
-                        Guardar Pokémon
-                    </button>
-                    <a href="{% url 'pokedex:index' %}" class="btn btn-outline-secondary rounded-pill">
-                        Cancelar
-                    </a>
+                <div class="mb-4">
+                    <label class="small fw-bold">FOTO O ARTWORK</label>
+                    {{ form.picture }}
                 </div>
+                
+                <button type="submit" class="btn btn-danger w-100 rounded-pill fw-bold py-2 shadow-sm fs-5">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> GUARDAR POKÉMON
+                </button>
             </form>
         </div>
     </div>
 </div>
-{% endblock content %}
+
+<script>
+    document.getElementById('btn-auto').addEventListener('click', async function() {
+        const nameInput = document.getElementById('id_name');
+        const name = nameInput.value.toLowerCase().trim();
+        if(!name) return alert('Por favor, escribe un nombre primero.');
+        
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+        
+        try {
+            // 1. Cargar Estadísticas
+            const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+            if(!res.ok) throw new Error('No encontrado');
+            const data = await res.json();
+            
+            document.getElementById('id_height').value = (data.height / 10).toFixed(2);
+            document.getElementById('id_weight').value = (data.weight / 10).toFixed(2);
+            
+            // Diccionario compatible con las opciones exactas de Django
+            const typeMap = {
+                'fire': 'Fuego', 'water': 'Agua', 'grass': 'Planta', 'electric': 'Eléctrico',
+                'ground': 'Tierra', 'rock': 'Roca', 'flying': 'Volador', 'bug': 'Bicho',
+                'normal': 'Normal', 'poison': 'Veneno', 'psychic': 'Psíquico', 'ghost': 'Fantasma',
+                'dragon': 'Dragón', 'ice': 'Hielo', 'fairy': 'Hada', 'fighting': 'Lucha', 'steel': 'Acero'
+            };
+            const engType = data.types[0].type.name;
+            const spaType = typeMap[engType] || 'Normal';
+            document.getElementById('id_type').value = spaType;
+
+            // 2. Cargar Descripción oficial en Español
+            try {
+                const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`);
+                if(speciesRes.ok) {
+                    const speciesData = await speciesRes.json();
+                    const esEntry = speciesData.flavor_text_entries.find(e => e.language.name === 'es');
+                    if(esEntry) {
+                        document.getElementById('id_description').value = esEntry.flavor_text.replace(/\n|\f/g, ' ');
+                    }
+                }
+            } catch (e) { console.log('Error descripción:', e); }
+
+            // 3. Cargar Imagen automática
+            try {
+                const imgUrl = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
+                if(imgUrl){
+                    const imgRes = await fetch(imgUrl);
+                    const blob = await imgRes.blob();
+                    const file = new File([blob], `${name}.png`, {type: blob.type});
+                    const dt = new DataTransfer(); 
+                    dt.items.add(file);
+                    document.getElementById('id_picture').files = dt.files;
+                }
+            } catch (e) { console.log('Error de imagen:', e); }
+            
+            btn.innerHTML = '<i class="fa-solid fa-check text-success"></i>';
+            setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; }, 2000);
+
+        } catch (e) { 
+            alert('❌ Pokémon no encontrado en PokéAPI. Recuerda escribirlo en inglés.'); 
+            btn.innerHTML = originalText; 
+            btn.disabled = false; 
+        }
+    });
+</script>
+{% endblock %}

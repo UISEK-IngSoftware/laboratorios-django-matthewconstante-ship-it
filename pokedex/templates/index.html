@@ -2,156 +2,100 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-end align-items-center mb-3 bg-light p-2 rounded-3 shadow-sm">
+<div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2">
+    <h2 class="fw-bold text-dark m-0"><i class="fa-solid fa-dragon me-2 text-danger"></i>Pokémones</h2>
     {% if user.is_authenticated %}
-        <span class="text-secondary small me-3">
-            Entrenador activo: <strong class="text-dark">{{ user.username }}</strong>
-        </span>
-        <form action="{% url 'pokedex:logout' %}" method="POST" class="m-0">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold">
-                <i class="fa-solid fa-right-from-bracket me-1"></i> Cerrar Sesión
-            </button>
-        </form>
-    {% else %}
-        <span class="text-secondary small me-3">Modo lectura (Invitado)</span>
-        <a href="{% url 'pokedex:login' %}" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold">
-            <i class="fa-solid fa-right-to-bracket me-1"></i> Iniciar Sesión
+        <a href="{% url 'pokedex:add_pokemon' %}" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold shadow-sm">
+            <i class="fa-solid fa-plus-circle me-1"></i> AÑADIR POKÉMON
         </a>
     {% endif %}
-</div>
-
-<div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2">
-    <h2 class="fw-bold text-dark m-0">Pokémones Registrados</h2>
-    <div class="d-flex align-items-center">
-        <span class="text-muted fw-bold me-3">{{ pokemons|length }} en total</span>
-        {% if user.is_authenticated %}
-            <a href="{% url 'pokedex:add_pokemon' %}" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold shadow-sm">
-                <i class="fa-solid fa-plus-circle me-1"></i> Añadir
-            </a>
-        {% endif %}
-    </div>
 </div>
 
 <div class="row g-4 mb-5">
     {% for pokemon in pokemons %}
     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="card pk-card h-100 rounded-4 overflow-hidden text-center bg-white border-0 shadow-sm">
-            <div class="bg-light p-4 border-bottom d-flex align-items-center justify-content-center" style="height: 180px;">
+        <div class="card pk-card h-100 overflow-hidden text-center">
+            
+            <div class="bg-light p-4 d-flex align-items-center justify-content-center border-bottom" style="height: 180px;">
                 {% if pokemon.picture %}
-                    <img src="{{ pokemon.picture.url }}" class="img-fluid drop-shadow" style="max-height: 140px; object-fit: contain;">
+                    <img src="{{ pokemon.picture.url }}" class="img-fluid" style="max-height: 140px; object-fit: contain;">
                 {% else %}
-                    <span class="display-1 text-muted opacity-50">🐾</span>
+                    <span class="display-1 opacity-25">🐾</span>
                 {% endif %}
             </div>
-
-            <div class="card-body d-flex flex-column">
+            
+            <div class="card-body d-flex flex-column pt-3">
                 <h5 class="card-title fw-bold text-dark mb-1">{{ pokemon.name|upper }}</h5>
                 <div class="mb-3">
-                    <span class="badge rounded-pill type-badge type-{{ pokemon.type }} shadow-sm">
-                        {{ pokemon.type }}
-                    </span>
+                    <span class="badge bg-secondary rounded-pill type-badge">{{ pokemon.type }}</span>
                 </div>
-                <p class="card-text text-secondary small flex-grow-1" style="line-height: 1.4;">
-                    {{ pokemon.description|default:"Sin datos en la Pokédex."|truncatechars:40 }}
-                </p>
-
+                
                 <div class="mt-auto">
                     <div class="d-flex gap-2 mb-2">
-                        <a href="{% url 'pokedex:pokemon' pokemon.id %}" class="btn btn-sm btn-outline-dark flex-grow-1 rounded-pill fw-bold">
-                            <i class="fa-solid fa-eye"></i> Ver
-                        </a>
+                        <a href="{% url 'pokedex:pokemon' pokemon.id %}" class="btn btn-sm btn-outline-dark flex-grow-1 rounded-pill fw-bold">VER</a>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'pokedex:edit_pokemon' pokemon.id %}" class="btn btn-sm btn-warning flex-grow-1 rounded-pill fw-bold text-dark">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
+                            <a href="{% url 'pokedex:edit_pokemon' pokemon.id %}" class="btn btn-sm btn-warning flex-grow-1 rounded-pill fw-bold text-dark">EDITAR</a>
                         {% endif %}
                     </div>
-                    
                     {% if user.is_authenticated %}
-                        <form action="{% url 'pokedex:delete_pokemon' pokemon.id %}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar a {{ pokemon.name }}?');">
+                        <form action="{% url 'pokedex:delete_pokemon' pokemon.id %}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar a {{ pokemon.name }}?');">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-light text-danger w-100 rounded-pill fw-bold border-0 shadow-sm" style="font-size: 0.8rem;">
-                                <i class="fa-solid fa-trash-can"></i> Liberar
-                            </button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger w-100 rounded-pill fw-bold">ELIMINAR</button>
                         </form>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    {% empty %}
-    <div class="col-12 text-center text-muted py-5">
-        <i class="fa-solid fa-box-open display-1 opacity-25 mb-3"></i>
-        <h4>No hay Pokémon registrados aún.</h4>
-    </div>
     {% endfor %}
 </div>
 
-
-<div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2">
-    <h2 class="fw-bold text-dark m-0">Entrenadores Oficiales</h2>
-    <div class="d-flex align-items-center">
-        <span class="text-muted fw-bold me-3">{{ Trainers|length }} en total</span>
-        {% if user.is_authenticated %}
-            <a href="{% url 'pokedex:add_trainer' %}" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold shadow-sm">
-                <i class="fa-solid fa-user-plus me-1"></i> Añadir
-            </a>
-        {% endif %}
-    </div>
+<div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2 mt-5">
+    <h2 class="fw-bold text-dark m-0"><i class="fa-solid fa-id-badge me-2 text-danger"></i>Entrenadores</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'pokedex:add_trainer' %}" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold shadow-sm">
+            <i class="fa-solid fa-user-plus me-1"></i> AÑADIR ENTRENADOR
+        </a>
+    {% endif %}
 </div>
 
 <div class="row g-4">
     {% for trainer in Trainers %}
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="card pk-card h-100 rounded-4 p-3 border-start border-danger border-5 bg-white shadow-sm d-flex flex-column justify-content-between">
+        <div class="card pk-card d-flex flex-column h-100 p-3 border-start border-danger border-4">
             <div class="d-flex align-items-center mb-3">
                 <div class="me-3">
                     {% if trainer.picture %}
-                        <img src="{{ trainer.picture.url }}" class="rounded-circle shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                        <img src="{{ trainer.picture.url }}" class="rounded-circle shadow-sm" style="width: 70px; height: 70px; object-fit: cover;">
                     {% else %}
-                        <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fa-solid fa-user text-white fs-2"></i>
+                        <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="fa-solid fa-user text-secondary fs-4"></i>
                         </div>
                     {% endif %}
                 </div>
                 <div class="flex-grow-1">
-                    <h5 class="mb-1 fw-bold text-dark">{{ trainer.first_name }} {{ trainer.last_name }}</h5>
-                    <span class="badge bg-warning text-dark fw-bold shadow-sm">
-                        <i class="fa-solid fa-medal me-1"></i>Nivel {{ trainer.level }}
-                    </span>
+                    <h6 class="mb-0 fw-bold text-dark">{{ trainer.first_name }} {{ trainer.last_name }}</h6>
+                    <small class="text-muted fw-semibold">Nivel {{ trainer.level }}</small>
                 </div>
             </div>
 
             <div class="mt-auto">
                 <div class="d-flex gap-2 mb-2">
-                    <a href="{% url 'pokedex:Trainer' trainer.id %}" class="btn btn-sm btn-outline-dark flex-grow-1 rounded-pill fw-bold">
-                        <i class="fa-solid fa-eye"></i> Perfil
-                    </a>
-                    
+                    <a href="{% url 'pokedex:Trainer' trainer.id %}" class="btn btn-sm btn-outline-dark flex-grow-1 rounded-pill fw-bold">PERFIL</a>
                     {% if user.is_authenticated %}
-                        <a href="{% url 'pokedex:edit_trainer' trainer.id %}" class="btn btn-sm btn-warning flex-grow-1 rounded-pill fw-bold text-dark">
-                            <i class="fa-solid fa-pen-to-square"></i> Editar
-                    </a>
+                        <a href="{% url 'pokedex:edit_trainer' trainer.id %}" class="btn btn-sm btn-warning flex-grow-1 rounded-pill fw-bold text-dark">EDITAR</a>
                     {% endif %}
                 </div>
-                
                 {% if user.is_authenticated %}
-                    <form action="{% url 'pokedex:delete_trainer' trainer.id %}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar al entrenador {{ trainer.first_name }}?');">
+                    <form action="{% url 'pokedex:delete_trainer' trainer.id %}" method="POST" onsubmit="return confirm('¿Eliminar al entrenador {{ trainer.first_name }}?');">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-light text-danger w-100 rounded-pill fw-bold border-0 shadow-sm" style="font-size: 0.8rem;">
-                            <i class="fa-solid fa-user-xmark"></i> Remover de la Liga
-                        </button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100 rounded-pill fw-bold">ELIMINAR</button>
                     </form>
                 {% endif %}
             </div>
+            
         </div>
-    </div>
-    {% empty %}
-    <div class="col-12 text-center text-muted py-5">
-        <i class="fa-solid fa-users-slash display-1 opacity-25 mb-3"></i>
-        <h4>No hay entrenadores registrados aún.</h4>
     </div>
     {% endfor %}
 </div>
-{% endblock %}
+{% endblock content %}

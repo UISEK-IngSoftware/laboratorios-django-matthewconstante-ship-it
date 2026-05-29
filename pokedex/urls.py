@@ -5,7 +5,13 @@ from . import views
 app_name = "pokedex"
 
 urlpatterns = [
-    path("index/", views.index, name="index"),
+    # Si entras a http://127.0.0.1:8000/ funciona:
+    path("", views.index, name="index"),
+    
+    # Si por error o costumbre entras a http://127.0.0.1:8000/index/ ¡TAMBIÉN funciona!
+    path("index/", views.index, name="index_alternativo"),
+    
+    # Tus otras rutas se quedan igual
     path("login/", auth_views.LoginView.as_view(template_name='login_directo.html'), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("pokemon/<int:id>/", views.pokemon, name="pokemon"),

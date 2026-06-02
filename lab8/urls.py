@@ -5,5 +5,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('pokedex.urls')), # Esto incluye todo lo que pusimos arriba en la raíz
+    path('', include('pokedex.urls')),  # Rutas de la web normal
+    path('api/', include('api.urls')),  # ¡Rutas de tu API de DRF!
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

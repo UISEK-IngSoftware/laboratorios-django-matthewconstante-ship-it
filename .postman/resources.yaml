@@ -1,0 +1,6 @@
+workspace:
+  id: 25f3b103-17e4-4ce8-892b-c63471abe407
+
+localResources:
+  collections:
+    - ../postman/collections/Pokedex

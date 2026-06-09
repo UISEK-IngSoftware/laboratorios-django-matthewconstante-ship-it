@@ -1,0 +1,14 @@
+$kind: http-request
+url: http://127.0.0.1:8000/api/pokemons/
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name": "Ditto",
+        "type": "Tierra",
+        "weight": 1 ,
+        "height": 3,
+        "trainer": "brock"
+    }
+order: 2000

@@ -1,4 +1,7 @@
 $kind: http-request
-url: ""
+name: pokemons
+url: "{{host_url}}pokemons"
 method: GET
+body:
+  type: urlencoded
 order: 1000

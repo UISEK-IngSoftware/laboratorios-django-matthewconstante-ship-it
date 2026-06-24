@@ -3,15 +3,7 @@ name: Login
 url: http://localhost:8000/o/token/
 method: POST
 body:
-  type: json
-  content: |-
-    {
-        "username": "matt2",
-        "password": "261055",
-        "grant_type": "password",
-        "client_id": "lzDeTCRtX2IW4NZ6gw6ARDtk15wnZdr51VuOomIR",
-        "client_secret":"Y4C24AM6BFwPy4cYecqLpg6MSqQU9OZWmUEySBUrCa91rlF3Sw2nnbsNNcYjhH8kVJNATh0wEXkude6sI5003LxaLulIlxS1PP3ZTI7Fq94FCDZY1CYOl3PiT6spSgA5"
-    }
+  type: urlencoded
 scripts:
   - type: afterResponse
     code: |-

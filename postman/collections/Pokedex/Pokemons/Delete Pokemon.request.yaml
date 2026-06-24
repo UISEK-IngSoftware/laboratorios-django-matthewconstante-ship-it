@@ -1,4 +1,12 @@
 $kind: http-request
+name: Delete Pokemon
 url: ""
 method: GET
+body:
+  type: json
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
 order: 4000
